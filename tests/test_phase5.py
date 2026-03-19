@@ -90,7 +90,7 @@ def _make_result(n_findings: int = 2, score: int = 80) -> ScanResult:
         score=score,
         score_breakdown=breakdown,
         files_scanned=10,
-        profile="saas",
+        profile="",
         target="/test/project",
     )
 
@@ -271,7 +271,7 @@ class TestScannerFingerprints:
         vuln_dir = Path(__file__).parent / "fixtures" / "vulnerable" / "secrets"
         if not vuln_dir.exists():
             pytest.skip("Fixture directory not found")
-        scanner = Scanner(profile="saas")
+        scanner = Scanner()
         result = scanner.scan(str(vuln_dir))
         for finding in result.findings:
             assert finding.fingerprint, f"Finding {finding.rule_id} missing fingerprint"
@@ -298,7 +298,7 @@ class TestHTMLReporter:
         from shipsafe.reporters.html import render
         result = _make_result()
         html = render(result)
-        assert "--bg: #1A1D23" in html  # Dark mode default
+        assert "--bg: #1A1D23" in html  # Dark mode default (softened)
 
     def test_light_mode_vars(self):
         from shipsafe.reporters.html import render
@@ -331,7 +331,7 @@ class TestHTMLReporter:
         from shipsafe.reporters.html import render
         result = ScanResult(
             findings=[], score=100, score_breakdown={},
-            files_scanned=5, profile="saas", target="/test",
+            files_scanned=5, profile="", target="/test",
         )
         html = render(result)
         assert "Clean scan" in html

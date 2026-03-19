@@ -47,7 +47,7 @@ def sample_result(sample_findings: list[Finding]) -> ScanResult:
         score=score,
         score_breakdown=breakdown,
         files_scanned=12,
-        profile="saas",
+        profile="",
         target="/repo",
     )
 
@@ -61,6 +61,6 @@ def clean_result() -> ScanResult:
         score=score,
         score_breakdown=breakdown,
         files_scanned=3,
-        profile="enterprise",
+        profile="",
         target="/repo",
     )

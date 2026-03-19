@@ -44,7 +44,7 @@ The automated trust tests in `tests/test_trust/` enforce these guarantees on eve
 
 ## Known Limitations
 
-- **Self-scan false positives (~45).** Scanning ShipSafe's own source produces ~45 findings because rule source files contain regex patterns that describe vulnerabilities (e.g., a rule detecting `eval()` contains the string `eval(` in its pattern). These are pattern declarations, not actual vulnerable code.
+- **Self-scan false positives.** Scanning ShipSafe's own source may produce findings in rule source files, which contain regex patterns that describe vulnerabilities (e.g., a rule detecting `eval()` contains the string `eval(` in its pattern). These are pattern declarations, not actual vulnerable code. Use `.shipsafeignore` to exclude them.
 - **No ReDoS detection.** Regular expression denial-of-service patterns are not yet detected (planned for a future release).
 - **INJ001 f-string sensitivity.** The SQL injection rule may flag harmless f-string variable assignments that happen to contain SQL keywords.
 - **Documentation file false positives.** Markdown files or comments describing vulnerabilities may trigger findings. Use `--exclude-path` to skip documentation directories.
@@ -53,7 +53,7 @@ The automated trust tests in `tests/test_trust/` enforce these guarantees on eve
 
 ```bash
 pip install shipsafe
-shipsafe scan .
+python -m shipsafe scan .
 ```
 
 Requires Python 3.12+. No API keys. No configuration. No cloud account.

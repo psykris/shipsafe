@@ -85,7 +85,7 @@ Each rule class has:
 ### How to verify
 
 ```bash
-shipsafe scan . --profile saas
+python -m shipsafe scan .
 # Expected: Score 100/100, zero findings
 ```
 

@@ -49,7 +49,7 @@ def test_scanner_does_not_modify_filesystem(tmp_path: Path):
     before = _hash_directory(dst)
     assert len(before) > 0, "Fixture copy is empty — test setup error"
 
-    scanner = Scanner(profile="saas")
+    scanner = Scanner()
     scanner.scan(str(dst))
 
     after = _hash_directory(dst)
@@ -80,7 +80,7 @@ def test_scanner_does_not_modify_single_file(tmp_path: Path):
     before_hash = hashlib.sha256(dst.read_bytes()).hexdigest()
     before_stat = dst.stat()
 
-    scanner = Scanner(profile="saas")
+    scanner = Scanner()
     scanner.scan(str(dst))
 
     after_hash = hashlib.sha256(dst.read_bytes()).hexdigest()
@@ -99,7 +99,7 @@ def test_scanner_does_not_write_outside_target(tmp_path: Path):
     # Record everything in tmp_path before scanning
     before = set(str(p.relative_to(tmp_path)) for p in tmp_path.rglob("*"))
 
-    scanner = Scanner(profile="saas")
+    scanner = Scanner()
     scanner.scan(str(dst))
 
     # Record everything in tmp_path after scanning

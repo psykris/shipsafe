@@ -23,11 +23,6 @@ class TestCLIScan:
         # Clean fixtures should have no secret findings
         assert exit_code == 0
 
-    def test_scan_with_profile_hobby(self):
-        """Hobby profile should work without error."""
-        exit_code = main(["scan", VULNERABLE, "--profile", "hobby"])
-        assert exit_code in (0, 1)  # Either is valid
-
     def test_scan_with_json_format(self, tmp_path):
         """JSON format should produce valid output."""
         output_file = str(tmp_path / "report.json")

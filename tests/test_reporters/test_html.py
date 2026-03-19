@@ -74,7 +74,7 @@ def test_render_fix_text_preserves_newlines(sample_findings):
         score=score,
         score_breakdown=breakdown,
         files_scanned=1,
-        profile="saas",
+        profile="",
         target="/repo",
     )
     output = html.render(result)

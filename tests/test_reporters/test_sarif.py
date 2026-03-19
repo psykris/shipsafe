@@ -69,7 +69,7 @@ def test_render_absolute_path_becomes_file_uri(tmp_path):
         score=score,
         score_breakdown=breakdown,
         files_scanned=1,
-        profile="saas",
+        profile="",
         target=str(tmp_path),
     )
     data = json.loads(sarif.render(result))

@@ -140,7 +140,7 @@ def test_secrets_never_appear_in_findings():
     secrets = _extract_secrets_from_fixtures()
     assert len(secrets) > 0, "Failed to extract any secrets from fixtures"
 
-    scanner = Scanner(profile="saas")
+    scanner = Scanner()
     result = scanner.scan(str(FIXTURES_DIR))
     assert len(result.findings) > 0, "Scanner produced no findings on vulnerable fixtures"
 
@@ -177,7 +177,7 @@ def test_secrets_never_appear_in_json_output():
     secrets = _extract_secrets_from_fixtures()
     assert len(secrets) > 0, "Failed to extract any secrets from fixtures"
 
-    scanner = Scanner(profile="saas")
+    scanner = Scanner()
     result = scanner.scan(str(FIXTURES_DIR))
     json_output = json_reporter.render(result)
 
@@ -193,7 +193,7 @@ def test_secrets_never_appear_in_json_output():
 
 def test_redacted_markers_present():
     """Verify findings contain REDACTED markers where secrets were."""
-    scanner = Scanner(profile="saas")
+    scanner = Scanner()
     result = scanner.scan(str(SECRETS_DIR))
 
     # Collect findings from secrets rules (SEC*)

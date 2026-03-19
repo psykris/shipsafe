@@ -13,7 +13,7 @@ ShipSafe was developed using **Claude Code** (Anthropic) as an AI coding assista
 | **Threat taxonomy** | Researched real incidents (Moltbook, Enrichlead, Lovable breaches), designed the 4-tier classification | Helped format and organize |
 | **Detection patterns** | Specified which API key formats to detect, sourced regex patterns from provider documentation | Implemented the Rule classes and test infrastructure |
 | **Scoring algorithm** | Designed the weights, caps, and thresholds | Implemented the calculation |
-| **Architecture** | Defined the trust contract, zero-dependency constraint, profile system | Wrote the implementation code |
+| **Architecture** | Defined the trust contract, zero-dependency constraint, rule system | Wrote the implementation code |
 | **Test fixtures** | Specified what vulnerable patterns to include | Generated the fixture files |
 | **Guides** | Outlined content, reviewed for accuracy | Drafted prose |
 | **CI workflows** | Specified the trust-enforcing checks | Wrote the YAML |

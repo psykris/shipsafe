@@ -39,15 +39,15 @@ def _sample_result() -> ScanResult:
         score=score,
         score_breakdown=breakdown,
         files_scanned=4,
-        profile="saas",
+        profile="",
         target="/repo",
     )
 
 
 def test_run_scan_matches_scanner():
     """Service-layer scan results should match direct Scanner usage."""
-    direct = Scanner(profile="saas").scan(VULNERABLE)
-    via_service = run_scan(ScanOptions(target=VULNERABLE, profile="saas"))
+    direct = Scanner().scan(VULNERABLE)
+    via_service = run_scan(ScanOptions(target=VULNERABLE))
     assert via_service.to_dict() == direct.to_dict()
 
 
@@ -68,7 +68,7 @@ def test_exit_code_for_result_defaults():
         score=clean_score,
         score_breakdown=clean_breakdown,
         files_scanned=1,
-        profile="enterprise",
+        profile="",
         target="/repo",
     )
     assert exit_code_for_result(sample_result) == 1

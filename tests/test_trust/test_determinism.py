@@ -24,7 +24,7 @@ FIXTURES = str(Path(__file__).resolve().parent.parent / "fixtures" / "vulnerable
 
 def test_scan_produces_identical_results():
     """Run the same scan twice and verify all fields match."""
-    scanner = Scanner(profile="saas")
+    scanner = Scanner()
     result1 = scanner.scan(FIXTURES)
     result2 = scanner.scan(FIXTURES)
 
@@ -65,7 +65,7 @@ def test_scan_produces_identical_results():
 
 def test_json_output_identical():
     """Verify JSON output is byte-identical across runs."""
-    scanner = Scanner(profile="saas")
+    scanner = Scanner()
 
     json1 = json_reporter.render(scanner.scan(FIXTURES))
     json2 = json_reporter.render(scanner.scan(FIXTURES))
@@ -75,7 +75,7 @@ def test_json_output_identical():
 
 def test_score_breakdown_identical():
     """Verify the score breakdown dict is identical across runs."""
-    scanner = Scanner(profile="saas")
+    scanner = Scanner()
     result1 = scanner.scan(FIXTURES)
     result2 = scanner.scan(FIXTURES)
 
@@ -86,7 +86,7 @@ def test_score_breakdown_identical():
 
 def test_findings_order_is_stable():
     """Verify findings are returned in the same order every time."""
-    scanner = Scanner(profile="saas")
+    scanner = Scanner()
     result1 = scanner.scan(FIXTURES)
     result2 = scanner.scan(FIXTURES)
 

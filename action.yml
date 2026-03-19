@@ -5,10 +5,6 @@ inputs:
     description: File or directory to scan.
     required: false
     default: .
-  profile:
-    description: ShipSafe profile to apply.
-    required: false
-    default: saas
   format:
     description: Output format to write.
     required: false
@@ -45,8 +41,7 @@ runs:
       shell: bash
       run: |
         echo "report_path=${{ inputs.output }}" >> "$GITHUB_OUTPUT"
-        shipsafe scan "${{ inputs.path }}" \
-          --profile "${{ inputs.profile }}" \
+        python -m shipsafe scan "${{ inputs.path }}" \
           --format "${{ inputs.format }}" \
           --output "${{ inputs.output }}" \
           --fail-on "${{ inputs.fail-on }}"
