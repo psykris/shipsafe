@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "shipsafe"
-version = "1.0.3"
+version = "1.0.4"
 description = "Deterministic security scanner for AI-generated codebases. No AI at runtime. No network calls. Your code stays local."
 readme = "README.md"
 license = {text = "MIT"}
