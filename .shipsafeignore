@@ -20,6 +20,8 @@ web
 GITHUB_RELEASE_NOTES.md
 README.md
 ACCURACY.md
+TRUST.md
+TRANSPARENCY.md
 
 # ShipSafe rule source files contain regex detection patterns.
 # These are pattern definitions, not vulnerable code.
