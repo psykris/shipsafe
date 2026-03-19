@@ -37,25 +37,27 @@ Full verification guide: [TRUST.md](TRUST.md)
 
 ### Installation
 
-ShipSafe has **zero runtime dependencies** - it only uses the Python standard library. Pick whichever install method you prefer:
+```bash
+pip install pipx          # skip if you already have pipx
+pipx install shipsafe
+```
+
+`pipx` installs CLI tools into isolated environments and automatically adds them to your PATH — on Windows, macOS, and Linux. `shipsafe ui` will work in any terminal after this, no extra setup required.
+
+<details>
+<summary>Alternative install methods</summary>
 
 ```bash
-# Option 1: pip (simple, works everywhere)
+# pip — works in a virtual environment; may need PATH setup on Windows
 pip install shipsafe
 
-# Option 2: pipx (recommended - auto-isolates CLI tools in their own venv)
-pipx install shipsafe
-
-# Option 3: uv (fastest - modern Python package manager)
+# uv — fastest option if you already use uv
 uv tool install shipsafe
 ```
 
-> **Which should I choose?**
-> - **pip** is fine if you're already in a virtual environment, or just want the fewest keystrokes.
-> - **pipx** is the safest default for CLI tools. It installs ShipSafe into its own isolated environment so it never conflicts with your project's dependencies. Requires a one-time `pip install pipx`.
-> - **uv** is the fastest option and handles isolation automatically, like pipx. If you already use `uv` for your Python workflow, this is the cleanest choice.
->
-> Because ShipSafe has zero dependencies, `pip install` carries no real conflict risk - but isolation is still good hygiene.
+> **Windows + pip note:** If you installed Python from the Microsoft Store and `shipsafe` is not recognised after `pip install shipsafe`, run it as `python -m shipsafe ui` — or use `pipx` above to fix this permanently.
+
+</details>
 
 ### Scan
 
@@ -78,7 +80,7 @@ That's it. No API keys. No cloud account. No configuration files.
 shipsafe ui
 ```
 
-Drop a folder path into the dashboard, hit Scan, and get a fully scored report - CRITICAL findings first, copy-paste fixes included. This is the recommended starting point for vibe coders.
+Drop a folder path into the dashboard, hit Scan, and get a fully scored report — CRITICAL findings first, copy-paste fixes included. This is the recommended starting point for vibe coders.
 
 ---
 
