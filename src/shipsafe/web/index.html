@@ -677,13 +677,11 @@
     formDiv.style.display = 'none';
     loadingDiv.classList.add('visible');
 
-    const profile = 'saas';
-
     try {
       const res = await fetch(API_BASE + '/api/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: target, profile: profile })
+        body: JSON.stringify({ path: target })
       });
 
       const data = await res.json();

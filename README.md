@@ -44,16 +44,10 @@ pip install shipsafe
 ### Scan
 
 ```bash
-# Scan your project
 python -m shipsafe scan .
-
-# Scan with a specific profile
-python -m shipsafe scan . --profile hobby       # Personal projects (CRITICAL + HIGH only)
-python -m shipsafe scan . --profile saas        # SaaS apps (full scan, default)
-python -m shipsafe scan . --profile enterprise  # Stricter privacy and supply-chain rules
 ```
 
-No API keys. No cloud account. No configuration files.
+No API keys. No cloud account. No configuration files. All 77 rules run on every scan.
 
 ### Launch the Visual UI
 
@@ -152,16 +146,6 @@ The scoring algorithm is fully transparent - see [scoring.py](src/shipsafe/scori
 
 ---
 
-## Scan Profiles
-
-| Profile | Use when | What it shows |
-|---------|----------|---------------|
-| `hobby` | Personal projects, learning, prototypes | CRITICAL + HIGH only |
-| `saas` | Apps with users, deployed to production | All severities (default) |
-| `enterprise` | Regulated industries, strict compliance | All severities + escalated privacy/supply-chain rules |
-
----
-
 ## Output Formats
 
 ```bash
@@ -233,7 +217,6 @@ Because the detection engine is deterministic regex patterns - not AI. Every rul
 - uses: psykris/shipsafe@v1.0.0
   with:
     path: ./src
-    profile: enterprise
     format: sarif
     output: security-report.sarif
     fail-on: critical,high

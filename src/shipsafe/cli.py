@@ -6,14 +6,13 @@ Exit codes
 ----------
 0  No findings above the fail threshold
 1  Findings found above the fail threshold
-2  Runtime error (bad arguments, missing profile, etc.)
+2  Runtime error (bad arguments, etc.)
 """
 
 import argparse
 import sys
 
 from shipsafe import __version__
-from shipsafe.config import AVAILABLE_PROFILES, DEFAULT_PROFILE
 from shipsafe.finding import Severity
 from shipsafe.service import (
     REPORTERS,
@@ -45,12 +44,6 @@ def _build_parser() -> argparse.ArgumentParser:
         "scan", help="Scan a directory for security vulnerabilities"
     )
     scan_p.add_argument("path", help="Path to scan (file or directory)")
-    scan_p.add_argument(
-        "--profile",
-        choices=AVAILABLE_PROFILES,
-        default=DEFAULT_PROFILE,
-        help=f"Scan profile (default: {DEFAULT_PROFILE})",
-    )
     scan_p.add_argument(
         "--format",
         choices=tuple(REPORTERS),
@@ -173,7 +166,6 @@ def _cmd_scan(args: argparse.Namespace) -> int:
     """Execute the ``scan`` subcommand."""
     options = ScanOptions(
         target=args.path,
-        profile=args.profile,
         severity_filter=parse_severity_list(args.severity),
         rule_ids=parse_csv_list(args.rule_id),
         exclude_paths=parse_csv_list(args.exclude_path),
@@ -342,7 +334,6 @@ def _cmd_check_secrets(args: argparse.Namespace) -> int:
     """Execute the ``check-secrets`` subcommand."""
     options = ScanOptions(
         target=args.path,
-        profile="saas",
         rule_ids=[f"SEC{i:03d}" for i in range(1, 100)],
         fail_on=[Severity.CRITICAL, Severity.HIGH, Severity.MEDIUM, Severity.LOW],
     )
@@ -356,7 +347,6 @@ def _cmd_check_gitignore(args: argparse.Namespace) -> int:
     """Execute the ``check-gitignore`` subcommand."""
     options = ScanOptions(
         target=args.path,
-        profile="saas",
         rule_ids=[f"GIT{i:03d}" for i in range(1, 100)],
         fail_on=[Severity.CRITICAL, Severity.HIGH, Severity.MEDIUM, Severity.LOW],
     )

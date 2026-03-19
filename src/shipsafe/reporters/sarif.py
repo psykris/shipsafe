@@ -137,10 +137,9 @@ def render(result: ScanResult, indent: int = 2) -> str:
                         ],
                     }
                 },
-                "automationDetails": {"id": result.profile},
+                "automationDetails": {"id": "shipsafe"},
                 "properties": {
                     "target": result.target,
-                    "profile": result.profile,
                     "filesScanned": result.files_scanned,
                     "score": result.score,
                     "scoreBreakdown": result.score_breakdown,

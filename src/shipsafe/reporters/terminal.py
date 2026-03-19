@@ -81,7 +81,6 @@ def render(result: ScanResult, file: object = None) -> str:
     lines.append(f"{BOLD}ShipSafe Security Report{RESET}")
     lines.append("=" * 50)
     lines.append(f"Target:  {result.target}")
-    lines.append(f"Profile: {result.profile}")
     lines.append(f"Files:   {result.files_scanned} scanned")
     lines.append("")
 
@@ -156,8 +155,7 @@ def render(result: ScanResult, file: object = None) -> str:
     lines.append(f"{DIM}{'─' * 50}{RESET}")
     lines.append(
         f"{total} finding{'s' if total != 1 else ''} | "
-        f"Score: {result.score}/100 | "
-        f"Profile: {result.profile}"
+        f"Score: {result.score}/100"
     )
     lines.append("")
 

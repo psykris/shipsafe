@@ -13,7 +13,6 @@ Design invariants
 
 from pathlib import Path
 
-from shipsafe.config import DEFAULT_PROFILE, Profile, load_profile
 from shipsafe.finding import Finding, ScanResult, Severity
 from shipsafe.fingerprint import fingerprint_finding
 from shipsafe.rules import discover_rules
@@ -90,18 +89,16 @@ class Scanner:
 
     Usage::
 
-        scanner = Scanner(profile="saas")
+        scanner = Scanner()
         result = scanner.scan(".")
     """
 
     def __init__(
         self,
-        profile: str = DEFAULT_PROFILE,
         exclude_paths: list[str] | None = None,
         severity_filter: list[Severity] | None = None,
         rule_ids: list[str] | None = None,
     ) -> None:
-        self.profile: Profile = load_profile(profile)
         self.rules: list[Rule] = discover_rules()
         self.exclude_dirs: set[str] = (
             set(exclude_paths) if exclude_paths is not None else set(DEFAULT_EXCLUDES)
@@ -139,15 +136,6 @@ class Scanner:
                 files_scanned += 1
                 findings.extend(self._scan_file(file_path, content))
 
-        # Apply profile severity overrides
-        for finding in findings:
-            finding.severity = self.profile.effective_severity(
-                finding.rule_id, finding.severity
-            )
-
-        # Filter by profile min_severity
-        findings = [f for f in findings if self.profile.should_include(f.severity)]
-
         # Filter by user-specified severity if provided
         if self.severity_filter:
             findings = [f for f in findings if f.severity in self.severity_filter]
@@ -170,7 +158,7 @@ class Scanner:
             score=score,
             score_breakdown=breakdown,
             files_scanned=files_scanned,
-            profile=self.profile.name,
+            profile="",
             target=str(target_path),
         )
 
@@ -192,12 +180,6 @@ class Scanner:
             # Filter by rule ID if specified
             if self.rule_ids and rule.id not in self.rule_ids:
                 continue
-
-            # Filter by rule prefix (profile-configured)
-            if self.profile.enabled_rule_prefixes:
-                prefix = rule.id.rstrip("0123456789")
-                if prefix not in self.profile.enabled_rule_prefixes:
-                    continue
 
             # Filter by file extension
             if not rule.applies_to(file_path):

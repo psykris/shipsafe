@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass, field
 
-from shipsafe.config import DEFAULT_PROFILE
 from shipsafe.finding import SEVERITY_MAP, ScanResult, Severity
 from shipsafe.reporters import html, json_reporter, sarif, terminal
 from shipsafe.scanner import Scanner
@@ -20,7 +19,6 @@ class ScanOptions:
     """Normalized scan options shared by CLI and desktop clients."""
 
     target: str
-    profile: str = DEFAULT_PROFILE
     severity_filter: list[Severity] | None = None
     rule_ids: list[str] | None = None
     exclude_paths: list[str] | None = None
@@ -53,7 +51,6 @@ def parse_csv_list(raw: str | None) -> list[str] | None:
 def run_scan(options: ScanOptions) -> ScanResult:
     """Run a scan with normalized options."""
     scanner = Scanner(
-        profile=options.profile,
         exclude_paths=options.exclude_paths,
         severity_filter=options.severity_filter,
         rule_ids=options.rule_ids,

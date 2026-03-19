@@ -229,7 +229,6 @@ def serve_report(
                 return
 
             target = payload.get("path", "").strip()
-            profile = payload.get("profile", "saas")
             if not target:
                 self._json_error(400, "Missing 'path' field")
                 return
@@ -243,7 +242,7 @@ def serve_report(
                 from shipsafe.history import save_scan, load_latest, diff_scans, score_trend
                 from shipsafe.service import render_report
 
-                options = ScanOptions(target=target, profile=profile)
+                options = ScanOptions(target=target)
                 result = run_scan(options)
 
                 # Save scan to history for new/resolved tracking
