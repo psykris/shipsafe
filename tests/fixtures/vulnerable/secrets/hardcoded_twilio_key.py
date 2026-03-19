@@ -1,2 +1,2 @@
 # Intentionally vulnerable: hardcoded Twilio key
-TWILIO_AUTH_TOKEN = "SKFakeTwilioKeyForShipSafeTests00"  # test fixture
+TWILIO_AUTH_TOKEN = "SKFakeTwilioKeyForShipSafeTests000"  # test fixture

@@ -16,26 +16,29 @@ jobs:
           echo "Checking src/shipsafe/ for network module imports..."
           # serve.py is exempt: it uses http.server for local-only serving.
           # User data never leaves the machine. Verified by code review.
-          VIOLATIONS=$(grep -rn \
+          # Patterns are anchored to the start of line (after indentation)
+          # to avoid false positives from string literals in rule files
+          # that mention library names in fix text (e.g. "requests calls").
+          VIOLATIONS=$(grep -rPn \
             --exclude="serve.py" \
-            -e "import socket" \
-            -e "import urllib" \
-            -e "import http\.client" \
-            -e "import http\.server" \
-            -e "import requests" \
-            -e "import httpx" \
-            -e "import aiohttp" \
-            -e "import urllib3" \
-            -e "import telnetlib" \
-            -e "import ftplib" \
-            -e "import smtplib" \
-            -e "from socket " \
-            -e "from urllib " \
-            -e "from http\.client " \
-            -e "from http\.server " \
-            -e "from requests " \
-            -e "from httpx " \
-            -e "from aiohttp " \
+            -e "^\s*import socket" \
+            -e "^\s*import urllib" \
+            -e "^\s*import http\.client" \
+            -e "^\s*import http\.server" \
+            -e "^\s*import requests" \
+            -e "^\s*import httpx" \
+            -e "^\s*import aiohttp" \
+            -e "^\s*import urllib3" \
+            -e "^\s*import telnetlib" \
+            -e "^\s*import ftplib" \
+            -e "^\s*import smtplib" \
+            -e "^\s*from socket " \
+            -e "^\s*from urllib " \
+            -e "^\s*from http\.client " \
+            -e "^\s*from http\.server " \
+            -e "^\s*from requests " \
+            -e "^\s*from httpx " \
+            -e "^\s*from aiohttp " \
             src/shipsafe/ || true)
 
           if [ -n "$VIOLATIONS" ]; then

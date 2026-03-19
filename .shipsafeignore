@@ -24,3 +24,7 @@ ACCURACY.md
 # ShipSafe rule source files contain regex detection patterns.
 # These are pattern definitions, not vulnerable code.
 rules
+
+# pyproject.toml intentionally uses open-ended dep bounds (>=x, no upper cap)
+# so CI always pulls the latest compatible versions. DEP103 is expected here.
+pyproject.toml

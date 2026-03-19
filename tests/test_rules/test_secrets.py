@@ -278,7 +278,7 @@ class TestHardcodedTwilioKey:
     def test_redaction(self):
         findings = self.rule.scan("hardcoded_twilio_key.py", self.vuln_content)
         for f in findings:
-            assert "SKFakeTwilioKeyForShipSafeTests00" not in f.snippet
+            assert "SKFakeTwilioKeyForShipSafeTests000" not in f.snippet
 
 
 # ── SEC012: HardcodedSendGridKey ───────────────────────────────────────
@@ -299,7 +299,7 @@ class TestHardcodedSendGridKey:
     def test_redaction(self):
         findings = self.rule.scan("hardcoded_sendgrid_key.py", self.vuln_content)
         for f in findings:
-            assert "SG.FakeSendGridKeyForTests0000.FakeSendGridKeyForShipSafeTestSuiteAAAAAAAAAAAAA" not in f.snippet
+            assert "SG.FakeSendGridKey_000000.FakeShipSafeTestFixtureAAAAAAAAAAAAAAAAAAAA" not in f.snippet
 
 
 # ── SEC013: HardcodedMailgunKey ────────────────────────────────────────

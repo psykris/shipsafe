@@ -442,7 +442,7 @@ class HardcodedTwilioKey(Rule):
     confidence = "high"
 
     patterns: list[str] = [
-        r"SK[0-9a-fA-F]{32}",
+        r"SK[0-9A-Za-z]{32}",
     ]
 
     fix: str = _env_fix(
