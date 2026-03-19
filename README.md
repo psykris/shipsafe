@@ -14,7 +14,7 @@ Before you install, here's what ShipSafe guarantees - and how to verify each cla
 
 | Guarantee | How to verify |
 |-----------|--------------|
-| Your code never leaves your machine | `grep -rn "import socket\|import urllib\|import requests" src/shipsafe/` → zero results |
+| Your code never leaves your machine | `grep -rn --exclude serve.py "import socket\|import urllib\|import requests" src/shipsafe/` → zero results (`serve.py` is the local UI server — no outbound calls, see [TRUST.md](TRUST.md)) |
 | No telemetry, no analytics, no tracking | Same check. No network modules = nowhere to send data |
 | Every detection rule is a readable regex pattern | `grep -A5 "patterns = \[" src/shipsafe/rules/*.py` |
 | Same input always produces same output | Run `shipsafe scan . --format json` twice, `diff` the output |
@@ -246,7 +246,7 @@ Because the detection engine is deterministic regex patterns - not AI. Every rul
 ### GitHub Action
 
 ```yaml
-- uses: ./  # or your published action path
+- uses: psykris/shipsafe@v1.0.0
   with:
     path: ./src
     profile: enterprise
