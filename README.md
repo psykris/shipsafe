@@ -17,7 +17,7 @@ Before you install, here's what ShipSafe guarantees - and how to verify each cla
 | Your code never leaves your machine | `grep -rn --exclude serve.py "import socket\|import urllib\|import requests" src/shipsafe/` → zero results (`serve.py` is the local UI server — no outbound calls, see [TRUST.md](TRUST.md)) |
 | No telemetry, no analytics, no tracking | Same check. No network modules = nowhere to send data |
 | Every detection rule is a readable regex pattern | `grep -A5 "patterns = \[" src/shipsafe/rules/*.py` |
-| Same input always produces same output | Run `shipsafe scan . --format json` twice, `diff` the output |
+| Same input always produces same output | Run `python -m shipsafe scan . --format json` twice, `diff` the output |
 | This tool passes its own scan | Check the Self-Scan CI badge above |
 | This tool was written with AI assistance | We document exactly how. See [TRANSPARENCY.md](TRANSPARENCY.md) |
 
@@ -38,46 +38,28 @@ Full verification guide: [TRUST.md](TRUST.md)
 ### Installation
 
 ```bash
-pip install pipx          # skip if you already have pipx
-pipx install shipsafe
-```
-
-`pipx` installs CLI tools into isolated environments and automatically adds them to your PATH — on Windows, macOS, and Linux. `shipsafe ui` will work in any terminal after this, no extra setup required.
-
-<details>
-<summary>Alternative install methods</summary>
-
-```bash
-# pip — works in a virtual environment; may need PATH setup on Windows
 pip install shipsafe
-
-# uv — fastest option if you already use uv
-uv tool install shipsafe
 ```
-
-> **Windows + pip note:** If you installed Python from the Microsoft Store and `shipsafe` is not recognised after `pip install shipsafe`, run it as `python -m shipsafe ui` — or use `pipx` above to fix this permanently.
-
-</details>
 
 ### Scan
 
 ```bash
 # Scan your project
-shipsafe scan .
+python -m shipsafe scan .
 
 # Scan with a specific profile
-shipsafe scan . --profile hobby       # Personal projects (CRITICAL + HIGH only)
-shipsafe scan . --profile saas        # SaaS apps (full scan, default)
-shipsafe scan . --profile enterprise  # Stricter privacy and supply-chain rules
+python -m shipsafe scan . --profile hobby       # Personal projects (CRITICAL + HIGH only)
+python -m shipsafe scan . --profile saas        # SaaS apps (full scan, default)
+python -m shipsafe scan . --profile enterprise  # Stricter privacy and supply-chain rules
 ```
 
-That's it. No API keys. No cloud account. No configuration files.
+No API keys. No cloud account. No configuration files.
 
 ### Launch the Visual UI
 
 ```bash
 # Launch the interactive web dashboard (opens your browser automatically)
-shipsafe ui
+python -m shipsafe ui
 ```
 
 Drop a folder path into the dashboard, hit Scan, and get a fully scored report — CRITICAL findings first, copy-paste fixes included. This is the recommended starting point for vibe coders.
@@ -183,11 +165,11 @@ The scoring algorithm is fully transparent - see [scoring.py](src/shipsafe/scori
 ## Output Formats
 
 ```bash
-shipsafe scan . --format terminal   # Colored terminal output (default)
-shipsafe scan . --format json       # Machine-readable JSON
-shipsafe scan . --format sarif      # SARIF 2.1.0 (GitHub Security tab)
-shipsafe scan . --format html       # Single-file HTML report
-shipsafe scan . --format html -o report.html  # Save to file
+python -m shipsafe scan . --format terminal   # Colored terminal output (default)
+python -m shipsafe scan . --format json       # Machine-readable JSON
+python -m shipsafe scan . --format sarif      # SARIF 2.1.0 (GitHub Security tab)
+python -m shipsafe scan . --format html       # Single-file HTML report
+python -m shipsafe scan . --format html -o report.html  # Save to file
 ```
 
 ---
