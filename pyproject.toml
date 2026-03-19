@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "shipsafe"
-version = "1.0.0"
+version = "1.0.1"
 description = "Deterministic security scanner for AI-generated codebases. No AI at runtime. No network calls. Your code stays local."
 readme = "README.md"
 license = {text = "MIT"}
@@ -35,6 +35,9 @@ test = ["pytest>=7.0", "pytest-cov>=4.0"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+shipsafe = ["web/*.html"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

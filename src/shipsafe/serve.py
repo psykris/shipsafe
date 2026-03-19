@@ -48,15 +48,15 @@ def _find_latest_report(project_root: str = ".") -> Path | None:
 
 def _web_ui_html() -> str:
     """Read the web UI index.html from the package's web/ directory."""
-    # web/ lives alongside the src/shipsafe package, two levels up
     pkg_dir = Path(__file__).resolve().parent
-    web_file = pkg_dir.parent.parent / "web" / "index.html"
-    if web_file.is_file():
-        return web_file.read_text(encoding="utf-8")
-    # Fallback: check relative to cwd
-    cwd_web = Path.cwd() / "web" / "index.html"
-    if cwd_web.is_file():
-        return cwd_web.read_text(encoding="utf-8")
+    # Primary: web/ bundled inside the installed package (src/shipsafe/web/)
+    bundled = pkg_dir / "web" / "index.html"
+    if bundled.is_file():
+        return bundled.read_text(encoding="utf-8")
+    # Dev fallback: web/ at project root (editable installs / source checkout)
+    dev_web = pkg_dir.parent.parent / "web" / "index.html"
+    if dev_web.is_file():
+        return dev_web.read_text(encoding="utf-8")
     return ""
 
 
