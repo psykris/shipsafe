@@ -1,0 +1,11 @@
+{
+    "name": "saas",
+    "description": "SaaS applications with users. Full scan with all severities. CORS and TLS issues elevated to CRITICAL.",
+    "min_severity": "LOW",
+    "severity_overrides": {
+        "CFG003": "CRITICAL",
+        "CRY001": "CRITICAL",
+        "CRY002": "CRITICAL"
+    },
+    "enabled_rule_prefixes": ["SEC", "GIT", "CFG", "CRY", "DAT", "AUTH", "INJ", "DEP", "AI", "PRI"]
+}

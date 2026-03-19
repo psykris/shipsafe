@@ -1,0 +1,52 @@
+name: Network Quarantine
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  network-quarantine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for banned network module imports
+        run: |
+          echo "Checking src/shipsafe/ for network module imports..."
+          VIOLATIONS=$(grep -rn \
+            -e "import socket" \
+            -e "import urllib" \
+            -e "import http\.client" \
+            -e "import http\.server" \
+            -e "import requests" \
+            -e "import httpx" \
+            -e "import aiohttp" \
+            -e "import urllib3" \
+            -e "import telnetlib" \
+            -e "import ftplib" \
+            -e "import smtplib" \
+            -e "from socket " \
+            -e "from urllib " \
+            -e "from http\.client " \
+            -e "from http\.server " \
+            -e "from requests " \
+            -e "from httpx " \
+            -e "from aiohttp " \
+            src/shipsafe/ || true)
+
+          if [ -n "$VIOLATIONS" ]; then
+            echo ""
+            echo "NETWORK QUARANTINE VIOLATION"
+            echo "============================"
+            echo "The following files import network modules."
+            echo "ShipSafe must never make network calls."
+            echo ""
+            echo "$VIOLATIONS"
+            echo ""
+            echo "Remove these imports or move them to an optional module."
+            exit 1
+          fi
+
+          echo "Network quarantine: CLEAN"
+          echo "No network module imports found in src/shipsafe/"

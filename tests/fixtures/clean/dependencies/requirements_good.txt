@@ -1,0 +1,9 @@
+# Safe: pinned dependencies, no --extra-index-url
+flask==3.0.2
+django==5.0.3
+requests==2.31.0
+sqlalchemy==2.0.29
+celery==5.3.6
+numpy==1.26.4
+fastapi==0.110.0
+pytest==8.1.1

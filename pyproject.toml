@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68.0,<80"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shipsafe"
+version = "1.0.0"
+description = "Deterministic security scanner for AI-generated codebases. No AI at runtime. No network calls. Your code stays local."
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.12"
+dependencies = []  # ZERO runtime dependencies — verified by CI
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Security",
+    "Topic :: Software Development :: Quality Assurance",
+]
+keywords = ["security", "scanner", "ai-generated-code", "sast", "vulnerabilities"]
+
+[project.urls]
+Homepage = "https://github.com/psykris/shipsafe"
+Repository = "https://github.com/psykris/shipsafe"
+Issues = "https://github.com/psykris/shipsafe/issues"
+
+[project.scripts]
+shipsafe = "shipsafe.cli:main"
+
+[project.optional-dependencies]
+test = ["pytest>=7.0,<9", "pytest-cov>=4.0,<6"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

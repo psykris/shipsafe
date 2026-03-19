@@ -1,0 +1,7 @@
+- id: shipsafe
+  name: shipsafe
+  description: Deterministic security scan for AI-generated codebases.
+  entry: shipsafe scan . --fail-on critical,high
+  language: python
+  pass_filenames: false
+  require_serial: true

@@ -1,0 +1,7 @@
+{
+    "name": "hobby",
+    "description": "Personal/hobby projects. Shows only CRITICAL and HIGH findings to keep output focused.",
+    "min_severity": "HIGH",
+    "severity_overrides": {},
+    "enabled_rule_prefixes": ["SEC", "GIT", "CFG", "CRY", "DAT", "AUTH", "INJ", "DEP", "AI", "PRI"]
+}

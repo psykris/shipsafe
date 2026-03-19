@@ -1,0 +1,18 @@
+# DEP101: --extra-index-url supply chain risk
+--extra-index-url https://my-private-index.example.com/simple/
+
+# DEP102: unpinned dependencies (bare package names)
+flask
+django
+sqlalchemy
+celery
+
+# DEP103: wildcard/unbounded version specifiers
+requests>=2.28.0
+numpy>=1.24
+fastapi>=0.100
+
+# DEP105: known typosquatted packages
+colourama
+requets
+djago

@@ -1,0 +1,35 @@
+name: Self-Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  self-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install ShipSafe
+        run: pip install -e .
+      - name: Self-scan (saas profile)
+        run: shipsafe scan . --format json --output self-scan.json
+      - name: Verify score
+        run: |
+          python -c "
+          import json
+          with open('self-scan.json') as f:
+              data = json.load(f)
+          score = data['score']['value']
+          findings = data['summary']['total']
+          print(f'ShipSafe Score: {score}/100')
+          print(f'Findings: {findings}')
+          if findings > 0:
+              for f in data['findings']:
+                  print(f'  [{f[\"severity\"]}] {f[\"rule_id\"]}: {f[\"rule_name\"]} in {f[\"file_path\"]}')
+              exit(1)
+          "

@@ -1,0 +1,26 @@
+# ShipSafe scan exclusions
+# Each non-blank, non-comment line is a directory name or filename to skip.
+
+# Test fixtures contain intentionally vulnerable code samples
+tests
+
+# OWASP benchmark apps (intentionally vulnerable by design)
+benchmarks
+
+# Legacy experiment directory (not production code)
+Codex experiment
+
+# Security guides contain vulnerability examples for education
+guides
+
+# Web UI contains vulnerability examples in inline HTML/JS
+web
+
+# Markdown docs reference vulnerability patterns for educational context
+GITHUB_RELEASE_NOTES.md
+README.md
+ACCURACY.md
+
+# ShipSafe rule source files contain regex detection patterns.
+# These are pattern definitions, not vulnerable code.
+rules

@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShipSafe - Security Scanner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark light;
+      --bg: #1A1D23;
+      --surface: #21242B;
+      --surface-raised: #282C34;
+      --border: #2E333A;
+      --border-focus: #3D4450;
+      --text: #E8E9EB;
+      --text-2: #8B8F96;
+      --text-3: #565A62;
+      --accent: #E07A3A;
+      --accent-hover: #C96A2F;
+      --accent-muted: rgba(224,122,58,0.12);
+      --success: #2FB380;
+      --success-muted: rgba(47,179,128,0.10);
+      --critical: #D14343;
+      --warning: #D4A72C;
+      --medium-color: #D97706;
+      --low-color: #0f766e;
+      --info-blue: #4A90B8;
+      --code-bg: #0B0D10;
+      --font-head: 'Space Grotesk', system-ui, sans-serif;
+      --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Cascadia Code', monospace;
+      --radius-card: 4px 4px 0px 4px;
+      --radius-btn: 4px 4px 4px 0px;
+      --radius-badge: 3px;
+    }
+    [data-theme="light"] {
+      --bg: #F4F4F0;
+      --surface: #FAFAF8;
+      --surface-raised: #EEEEEA;
+      --border: #E0E1DE;
+      --border-focus: #C8C9C6;
+      --text: #111110;
+      --text-2: #6B6B69;
+      --text-3: #A0A09E;
+      --accent: #C96A2F;
+      --accent-hover: #B05A25;
+      --accent-muted: rgba(201,106,47,0.10);
+      --success-muted: rgba(47,179,128,0.08);
+      --code-bg: #1d1c19;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease; }
+    body {
+      font-family: var(--font-body);
+      color: var(--text);
+      background: var(--bg);
+      font-size: 13px;
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+
+    /* ── Header (matches HTML report) ─────────────── */
+    .report-header {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 10px 24px; display: flex; align-items: center; justify-content: space-between;
+      color: var(--text-2);
+    }
+    .report-header-title { display: flex; align-items: baseline; gap: 10px; }
+    .header-project { font-family: var(--font-head); font-size: 24px; font-weight: 700; color: var(--text); }
+    .header-subtitle { font-size: 13px; color: var(--text-2); }
+    .theme-toggle {
+      background: none; border: 1px solid var(--border); color: var(--text-2);
+      width: 32px; height: 32px; border-radius: var(--radius-badge); cursor: pointer;
+      font-size: 14px; display: flex; align-items: center; justify-content: center;
+    }
+    .theme-toggle:hover { border-color: var(--border-focus); color: var(--text); }
+
+    /* ── Page Layout ──────────────────────────────── */
+    .page { max-width: 1080px; margin: 0 auto; padding: 32px 24px 48px; }
+
+    /* ── Trust Badge ──────────────────────────────── */
+    .trust-badge {
+      text-align: center; padding: 40px 24px 24px;
+    }
+    .trust-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--accent-muted); margin-bottom: 12px;
+    }
+    .trust-icon svg { width: 32px; height: 32px; color: var(--accent); }
+    .trust-badge h2 {
+      font-family: var(--font-head); font-size: 18px; font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .trust-badge p { color: var(--text-2); font-size: 13px; }
+    .hero-cycle {
+      font-family: var(--font-head); font-size: 20px; font-weight: 600;
+      color: var(--text); margin-top: 8px;
+    }
+    .cycle-word {
+      color: var(--accent); display: inline-block;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      min-width: 100px;
+    }
+    .cycle-word.fade-out { opacity: 0; transform: translateY(-6px); }
+    .hero-sub { color: var(--text-2); font-size: 13px; margin-top: 6px; }
+
+    /* ── Scan Form ────────────────────────────────── */
+    .scan-form {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-card); padding: 24px;
+      max-width: 560px; margin: 0 auto 24px;
+    }
+    .scan-form label {
+      display: block; font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--text-3); margin-bottom: 6px;
+    }
+    .scan-form label:not(:first-child) { margin-top: 16px; }
+    .scan-form input[type="text"], .scan-form select {
+      width: 100%; padding: 10px 12px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-badge); color: var(--text);
+      font-family: var(--font-mono); font-size: 13px;
+    }
+    .scan-form input[type="text"]:focus, .scan-form select:focus {
+      outline: none; border-color: var(--accent);
+    }
+    .scan-form input[type="text"]::placeholder { color: var(--text-3); }
+    .scan-btn {
+      display: block; width: 100%; margin-top: 20px; padding: 12px;
+      background: var(--accent); color: #fff; border: none;
+      border-radius: var(--radius-btn); font-size: 14px; font-weight: 600;
+      font-family: var(--font-body); cursor: pointer;
+      transition: background 0.15s;
+    }
+    .scan-btn:hover:not(:disabled) { background: var(--accent-hover); }
+    .scan-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .scan-error {
+      margin-top: 12px; padding: 8px 12px; font-size: 12px;
+      background: rgba(209,67,67,0.1); color: var(--critical);
+      border-radius: var(--radius-badge); display: none;
+    }
+
+    /* ── Loading State ────────────────────────────── */
+    .scan-loading {
+      text-align: center; padding: 48px 24px; display: none;
+    }
+    .scan-loading.visible { display: block; }
+    .spinner {
+      display: inline-block; width: 32px; height: 32px;
+      border: 3px solid var(--border); border-top-color: var(--accent);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+      margin-bottom: 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .scan-loading p { color: var(--text-2); font-size: 14px; }
+
+    /* ── Dashboard ────────────────────────────────── */
+    .dashboard { display: none; }
+    .dashboard.visible { display: block; }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 0; margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .topbar-left {
+      display: flex; align-items: center; gap: 8px;
+      font-family: var(--font-mono); font-size: 13px; color: var(--text-2);
+    }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .back-btn {
+      background: var(--accent); border: 1px solid var(--accent); color: #fff;
+      padding: 6px 16px; border-radius: var(--radius-btn); cursor: pointer;
+      font-size: 13px; font-weight: 600; font-family: var(--font-body);
+    }
+    .back-btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .dl-json-btn {
+      background: none; border: 1px solid var(--border); color: var(--text-2);
+      padding: 4px 12px; border-radius: var(--radius-badge); cursor: pointer;
+      font-size: 12px; font-family: var(--font-body);
+    }
+    .dl-json-btn:hover { border-color: var(--border-focus); color: var(--text); }
+
+    /* ── Score Chip (matches HTML report) ─────────── */
+    .status-row {
+      display: flex; align-items: flex-start; gap: 24px; margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .score-chip {
+      display: flex; flex-direction: column; align-items: flex-start;
+      padding: 16px 20px; border-radius: var(--radius-card);
+      min-width: 120px; color: #fff;
+    }
+    .score-chip.green { background: #276749; }
+    .score-chip.yellow { background: #975a16; }
+    .score-chip.orange { background: #c05621; }
+    .score-chip.red { background: #9b2c2c; }
+    .score-label {
+      font-family: var(--font-head); font-size: 11px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.12em; opacity: 0.8;
+      margin-bottom: 4px;
+    }
+    .score-value {
+      font-family: var(--font-head); font-size: 32px; font-weight: 700; line-height: 1;
+    }
+    .score-status { font-size: 13px; margin-top: 6px; font-weight: 500; opacity: 1; }
+    .status-meta {
+      display: flex; flex-direction: column; gap: 8px; color: var(--text-2); font-size: 13px;
+    }
+    .status-meta strong { color: var(--text); }
+
+    /* ── Summary Grid (matches HTML report) ───────── */
+    .summary-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px; margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-card); padding: 12px 16px;
+    }
+    .stat-card-label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text-3); margin-bottom: 4px;
+    }
+    .stat-card-value { font-family: var(--font-head); font-size: 24px; font-weight: 700; }
+    .sev-critical { color: var(--critical); }
+    .sev-high { color: var(--warning); }
+    .sev-medium { color: var(--medium-color); }
+    .sev-low { color: var(--low-color); }
+    .sev-info { color: var(--text-3); }
+
+    /* ── Filter Bar (matches HTML report) ─────────── */
+    .filter-bar {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
+      align-items: center;
+    }
+    .filter-bar select, .filter-bar input {
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text); font-family: var(--font-mono); font-size: 12px;
+      padding: 4px 8px; border-radius: var(--radius-badge); height: 28px;
+    }
+    .filter-bar select:focus, .filter-bar input:focus {
+      outline: none; border-color: var(--accent);
+    }
+
+    /* ── Findings Table (matches HTML report) ─────── */
+    .findings-table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+    }
+    .findings-table th {
+      text-align: left; padding: 8px 10px; font-size: 11px;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--text-3); border-bottom: 1px solid var(--border);
+      cursor: pointer; user-select: none;
+    }
+    .findings-table th:hover { color: var(--text-2); }
+    .findings-table td {
+      padding: 8px 10px; border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .findings-table tr { height: 36px; }
+    .findings-table tr:hover { background: var(--surface-raised); }
+    .findings-table tr.expanded { background: var(--surface); }
+    .sev-dot {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      margin-right: 6px; vertical-align: middle;
+    }
+    .sev-dot.critical { background: var(--critical); }
+    .sev-dot.high { background: var(--warning); }
+    .sev-dot.medium { background: var(--medium-color); }
+    .sev-dot.low { background: var(--low-color); }
+    .sev-dot.info { background: var(--text-3); }
+    .fp-short { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); }
+    .file-ref { font-family: var(--font-mono); font-size: 12px; }
+    .confidence-badge {
+      font-size: 10px; padding: 1px 5px; border-radius: 2px;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      border: 1px solid var(--border); color: var(--text-2);
+    }
+    .confidence-high { color: var(--success); border-color: var(--success); }
+    .confidence-medium { color: var(--warning); border-color: var(--warning); }
+    .confidence-low { color: var(--critical); border-color: var(--critical); }
+    .detail-row { display: none; }
+    .detail-row.visible { display: table-row; }
+    .detail-cell {
+      padding: 16px 20px; background: var(--surface-raised);
+      border-bottom: 1px solid var(--border);
+    }
+    .detail-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    .detail-section h4 {
+      font-family: var(--font-head); font-size: 13px; font-weight: 600;
+      color: var(--text-2); margin-bottom: 8px;
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .detail-section p { white-space: pre-wrap; line-height: 1.6; }
+    .detail-code {
+      font-family: var(--font-mono); font-size: 12px; line-height: 1.5;
+      background: var(--code-bg); color: #fef7eb; padding: 12px 16px;
+      border-radius: var(--radius-badge); overflow-x: auto;
+      white-space: pre-wrap; word-break: break-all;
+    }
+    .detail-meta {
+      display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 12px;
+      font-size: 12px; color: var(--text-2);
+    }
+    .detail-meta dl { display: flex; flex-direction: column; gap: 2px; }
+    .detail-meta dt { font-size: 10px; text-transform: uppercase; color: var(--text-3); }
+    .detail-meta dd { font-family: var(--font-mono); margin: 0; }
+    .detail-meta a { color: var(--accent); text-decoration: none; }
+    .detail-meta a:hover { text-decoration: underline; }
+
+    /* ── Copy Fix Prompt ──────────────────────────── */
+    .copy-fix-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; background: var(--accent); color: #fff;
+      border: none; border-radius: var(--radius-btn); cursor: pointer;
+      font-size: 13px; font-weight: 500; font-family: var(--font-body);
+      transition: background 0.15s; margin-top: 12px;
+    }
+    .copy-fix-btn:hover { background: var(--accent-hover); }
+    .copy-fix-btn.copied { background: var(--success); }
+    .copy-fix-btn svg { width: 14px; height: 14px; }
+
+    /* ── Success State ────────────────────────────── */
+    .empty-state {
+      text-align: center; padding: 48px 24px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+    }
+    .empty-state .check { font-size: 48px; color: var(--success); margin-bottom: 8px; }
+    .empty-state h2 { font-family: var(--font-head); font-size: 18px; margin-bottom: 8px; }
+
+    /* ── Footer ───────────────────────────────────── */
+    .footer {
+      margin-top: 40px; padding: 20px 0; border-top: 1px solid var(--border);
+      font-size: 13px; color: var(--text-2); text-align: center;
+      line-height: 1.7;
+    }
+    .footer-line2 { font-size: 12px; margin-top: 6px; color: var(--text-2); opacity: 0.85; }
+
+    /* ── Browse Button ────────────────────────────── */
+    .path-row { display: flex; gap: 8px; align-items: stretch; }
+    .path-row input { flex: 1; }
+    .browse-btn {
+      background: var(--surface-raised); border: 1px solid var(--border);
+      color: var(--text-2); border-radius: var(--radius-badge); cursor: pointer;
+      padding: 0 12px; display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .browse-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Help Tooltips ───────────────────────────── */
+    .help-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 1.5px solid var(--accent); color: var(--accent);
+      font-size: 11px; font-weight: 700; cursor: pointer;
+      position: relative; vertical-align: middle; margin-left: 6px;
+      font-family: var(--font-body); line-height: 1;
+      opacity: 0.85;
+    }
+    .help-icon:hover { opacity: 1; background: var(--accent-muted); }
+    .help-popover {
+      display: none; position: absolute; top: calc(100% + 8px); left: -8px;
+      width: 320px; padding: 14px 16px;
+      background: var(--surface); border: 1px solid var(--border-focus);
+      border-radius: var(--radius-card); font-size: 13px; font-weight: 400;
+      color: var(--text); line-height: 1.65; z-index: 200;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.35); text-transform: none;
+      letter-spacing: normal; cursor: default;
+    }
+    .help-popover strong { color: var(--accent); }
+    .help-popover a { color: var(--accent); text-decoration: none; }
+    .help-popover a:hover { text-decoration: underline; }
+    .help-icon.active .help-popover { display: block; }
+
+    /* ── Diff Badges ─────────────────────────────── */
+    .diff-badges { display: flex; gap: 8px; margin-top: 4px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: var(--radius-badge);
+      font-size: 12px; font-weight: 600;
+    }
+    .badge-new { background: var(--accent-muted); color: var(--accent); }
+    .badge-resolved { background: var(--success-muted); color: var(--success); }
+
+    /* ── Status badges in table ──────────────────── */
+    .findings-table tr.new-finding td:first-child {
+      box-shadow: inset 3px 0 0 var(--accent);
+    }
+
+    /* ── Rules Reference ─────────────────────────── */
+    .rules-view { display: none; }
+    .rules-view.visible { display: block; }
+    .rule-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-card); padding: 16px 20px; margin-bottom: 12px;
+    }
+    .rule-card-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
+      cursor: pointer;
+    }
+    .rule-card-header h3 {
+      font-family: var(--font-head); font-size: 14px; font-weight: 600; flex: 1;
+    }
+    .rule-card-id {
+      font-family: var(--font-mono); font-size: 12px; color: var(--accent);
+      padding: 2px 8px; background: var(--accent-muted); border-radius: var(--radius-badge);
+    }
+    .rule-card-body { display: none; padding-top: 12px; border-top: 1px solid var(--border); margin-top: 8px; }
+    .rule-card.expanded .rule-card-body { display: block; }
+    .rule-card-body dt { font-size: 11px; text-transform: uppercase; color: var(--text-3); margin-top: 10px; letter-spacing: 0.06em; }
+    .rule-card-body dd { margin: 4px 0 0; line-height: 1.6; }
+    .rule-card-body a { color: var(--accent); text-decoration: none; }
+    .rule-card-body a:hover { text-decoration: underline; }
+    .rule-search {
+      width: 100%; padding: 10px 12px; margin-bottom: 16px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-badge); color: var(--text);
+      font-family: var(--font-mono); font-size: 13px;
+    }
+    .rule-search:focus { outline: none; border-color: var(--accent); }
+    .rule-group { margin-bottom: 8px; }
+    .rule-group-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 16px; cursor: pointer;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      font-family: var(--font-head); font-size: 14px; font-weight: 600;
+    }
+    .rule-group-header:hover { border-color: var(--border-focus); }
+    .rule-group-header svg { color: var(--accent); flex-shrink: 0; }
+    .rule-group-prefix {
+      font-family: var(--font-mono); font-size: 12px; color: var(--accent);
+      padding: 2px 8px; background: var(--accent-muted); border-radius: var(--radius-badge);
+    }
+    .rule-group-count {
+      font-family: var(--font-mono); font-size: 12px;
+      color: var(--text-3); margin-left: auto;
+    }
+    .rule-group-chevron {
+      color: var(--text-3); transition: transform 0.2s;
+    }
+    .rule-group.expanded .rule-group-chevron { transform: rotate(90deg); }
+    .rule-group-body { display: none; padding: 8px 0 0 20px; }
+    .rule-group.expanded .rule-group-body { display: block; }
+
+    /* ── Print ────────────────────────────────────── */
+    @media print {
+      body { background: white !important; color: #111 !important; }
+      .report-header, .topbar, .filter-bar, .theme-toggle, .scan-form,
+      .trust-badge, .scan-loading { display: none !important; }
+      .page { max-width: 100%; padding: 0; }
+    }
+
+    /* ── Responsive ───────────────────────────────── */
+    @media (max-width: 640px) {
+      .page { padding: 16px 12px; }
+      .status-row { flex-direction: column; }
+      .detail-grid { grid-template-columns: 1fr; }
+      .summary-grid { grid-template-columns: repeat(3, 1fr); }
+      .scan-form { margin: 0 12px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="report-header">
+    <div class="report-header-title">
+      <span class="header-project">ShipSafe</span>
+      <span class="header-subtitle">Security Scanner</span>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle theme">&#9681;</button>
+  </header>
+
+  <main class="page">
+    <!-- ── Scan View ───────────────────────────────── -->
+    <div id="scan-view">
+      <div class="trust-badge">
+        <div class="trust-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <h2>Your code never leaves this machine</h2>
+        <p class="hero-cycle">Finds <span class="cycle-word" id="cycle-word">secrets</span> before you ship</p>
+        <p class="hero-sub">77 vulnerability patterns - zero dependencies - fully offline</p>
+      </div>
+
+      <div class="scan-form" id="scan-form">
+        <label for="scan-path">Project folder</label>
+        <div class="path-row">
+          <input type="text" id="scan-path" placeholder="D:\MyProject or /home/user/project">
+          <button type="button" class="browse-btn" onclick="browseFolder()" title="Browse for folder">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+            </svg>
+          </button>
+        </div>
+
+        <button class="scan-btn" id="scan-btn" onclick="startScan()">Scan Project</button>
+        <div class="scan-error" id="scan-error"></div>
+      </div>
+
+      <div class="scan-loading" id="scan-loading">
+        <div class="spinner"></div>
+        <p>Scanning project&hellip;</p>
+      </div>
+    </div>
+
+    <!-- ── Results Dashboard ───────────────────────── -->
+    <div class="dashboard" id="dashboard">
+      <div class="topbar">
+        <div class="topbar-left" style="flex-direction:column;align-items:flex-start;gap:2px">
+          <span style="font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--text)">ShipSafe</span>
+          <span id="dash-target" style="font-size:12px"></span>
+        </div>
+        <div class="topbar-right">
+          <button class="dl-json-btn" onclick="showRulesView()">Rules Reference</button>
+          <button class="dl-json-btn" onclick="downloadJSON()">Download JSON</button>
+          <button class="back-btn" onclick="showScanView()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg> New Scan</button>
+        </div>
+      </div>
+
+      <section class="status-row" id="status-row"></section>
+      <section class="summary-grid" id="summary-grid"></section>
+
+      <div class="filter-bar" id="filter-bar">
+        <select id="filter-severity">
+          <option value="">All Severities</option>
+          <option value="CRITICAL">Critical</option>
+          <option value="HIGH">High</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="LOW">Low</option>
+          <option value="INFO">Info</option>
+        </select>
+        <select id="filter-confidence">
+          <option value="">All Confidence</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+        <input id="filter-search" type="text" placeholder="Search rule, file, or text..." style="min-width:200px">
+      </div>
+
+      <div id="findings-container">
+        <table class="findings-table" id="findings-table">
+          <thead>
+            <tr>
+              <th data-sort="severity">Severity</th>
+              <th data-sort="file_path">File</th>
+              <th data-sort="rule_id">Rule</th>
+              <th data-sort="confidence">Confidence <span class="help-icon" onclick="event.stopPropagation(); this.classList.toggle('active')">?<span class="help-popover"><strong>HIGH</strong> = almost certainly a real issue.<br><br><strong>MEDIUM</strong> = likely real, worth investigating.<br><br><strong>LOW</strong> = may be a false positive - verify manually.<br><br><a href="#" onclick="event.preventDefault(); showRulesView()">View all rules reference &rarr;</a></span></span></th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="findings-body"></tbody>
+        </table>
+      </div>
+
+      <div class="empty-state" id="empty-state" style="display:none">
+        <div class="check success-icon">&#10003;</div>
+        <h2>Clean scan - no findings</h2>
+        <p style="color:var(--text-2)" id="empty-state-text"></p>
+      </div>
+
+      <footer class="footer" id="footer"></footer>
+    </div>
+
+    <!-- ── Rules Reference View ────────────────────── -->
+    <div class="rules-view" id="rules-view">
+      <div class="topbar">
+        <div class="topbar-left">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+          <span style="font-family:var(--font-head);font-weight:600;color:var(--text)">Rules Reference</span>
+          <span style="color:var(--text-3)">- 77 detection rules</span>
+        </div>
+        <div class="topbar-right">
+          <button class="back-btn" onclick="hideRulesView()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg> Back</button>
+        </div>
+      </div>
+      <input type="text" class="rule-search" id="rule-search" placeholder="Search rules by ID, name, CWE, or keyword...">
+
+      <!-- Scoring explanation -->
+      <div id="scoring-section" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);padding:20px 24px;margin-bottom:20px">
+        <h3 style="font-family:var(--font-head);font-size:16px;font-weight:600;color:var(--text);margin:0 0 12px 0">How does the Security Score work?</h3>
+        <p style="font-size:13px;color:var(--text-2);line-height:1.7;margin:0 0 14px 0">Every project starts at <strong style="color:var(--text)">100</strong>. Points are deducted for each finding based on its severity. Each severity level has a cap so a single category cannot tank your entire score.</p>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;max-width:420px">
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:8px 12px 8px 0;font-weight:600;color:var(--critical)">CRITICAL</td>
+            <td style="padding:8px 0">-25 per finding</td>
+            <td style="padding:8px 0;color:var(--text-3)">max -75</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:8px 12px 8px 0;font-weight:600;color:var(--accent)">HIGH</td>
+            <td style="padding:8px 0">-10 per finding</td>
+            <td style="padding:8px 0;color:var(--text-3)">max -40</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:8px 12px 8px 0;font-weight:600;color:var(--medium-color)">MEDIUM</td>
+            <td style="padding:8px 0">-5 per finding</td>
+            <td style="padding:8px 0;color:var(--text-3)">max -25</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px 8px 0;font-weight:600;color:var(--low-color)">LOW</td>
+            <td style="padding:8px 0">-2 per finding</td>
+            <td style="padding:8px 0;color:var(--text-3)">max -10</td>
+          </tr>
+        </table>
+        <div style="margin-top:14px;font-size:12px;color:var(--text-3);line-height:1.7">
+          <strong style="color:var(--success)">90&ndash;100</strong> Ready to deploy &nbsp;&bull;&nbsp;
+          <strong style="color:var(--text)">70&ndash;89</strong> Fix HIGH items first &nbsp;&bull;&nbsp;
+          <strong style="color:var(--warning)">40&ndash;69</strong> Do not deploy &nbsp;&bull;&nbsp;
+          <strong style="color:var(--critical)">0&ndash;39</strong> Stop and fix
+        </div>
+      </div>
+
+      <div id="rules-list"></div>
+    </div>
+  </main>
+
+  <script>
+  /* ── Config ──────────────────────────────────────── */
+  const API_BASE = 'http://localhost:8439';
+
+  /* ── Theme ───────────────────────────────────────── */
+  function toggleTheme() {
+    const html = document.documentElement;
+    const t = html.getAttribute('data-theme');
+    html.setAttribute('data-theme', t === 'light' ? 'dark' : 'light');
+  }
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+
+  /* ── State ───────────────────────────────────────── */
+  let scanData = null;
+
+  /* ── Init: fetch project root from server ────────── */
+  (async function init() {
+    try {
+      const res = await fetch(API_BASE + '/api/info');
+      if (res.ok) {
+        const info = await res.json();
+        if (info.project_root) {
+          document.getElementById('scan-path').value = info.project_root;
+        }
+      }
+    } catch (e) {
+      // Server not running - user will type path manually
+    }
+  })();
+
+  /* ── Scan ────────────────────────────────────────── */
+  async function startScan() {
+    const pathInput = document.getElementById('scan-path');
+    const scanBtn = document.getElementById('scan-btn');
+    const errorDiv = document.getElementById('scan-error');
+    const loadingDiv = document.getElementById('scan-loading');
+    const formDiv = document.getElementById('scan-form');
+
+    const target = pathInput.value.trim();
+    if (!target) {
+      errorDiv.textContent = 'Please enter a project folder path.';
+      errorDiv.style.display = 'block';
+      return;
+    }
+
+    errorDiv.style.display = 'none';
+    scanBtn.disabled = true;
+    scanBtn.textContent = 'Scanning...';
+    formDiv.style.display = 'none';
+    loadingDiv.classList.add('visible');
+
+    const profile = 'saas';
+
+    try {
+      const res = await fetch(API_BASE + '/api/scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: target, profile: profile })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Scan failed');
+      }
+
+      scanData = data;
+      renderDashboard(data);
+    } catch (err) {
+      loadingDiv.classList.remove('visible');
+      formDiv.style.display = 'block';
+      errorDiv.textContent = err.message || 'Failed to connect to ShipSafe server. Is it running on port 8439?';
+      errorDiv.style.display = 'block';
+    } finally {
+      scanBtn.disabled = false;
+      scanBtn.textContent = 'Scan Project';
+    }
+  }
+
+  // Allow Enter key to trigger scan
+  document.getElementById('scan-path').addEventListener('keydown', e => {
+    if (e.key === 'Enter') startScan();
+  });
+
+  function showScanView() {
+    document.getElementById('scan-view').style.display = '';
+    document.getElementById('scan-form').style.display = '';
+    document.getElementById('scan-loading').classList.remove('visible');
+    document.getElementById('dashboard').classList.remove('visible');
+    scanData = null;
+  }
+
+  /* ── Helpers ─────────────────────────────────────── */
+  function esc(s) {
+    if (!s) return '';
+    const d = document.createElement('div');
+    d.textContent = String(s);
+    return d.innerHTML;
+  }
+
+  const SEV_ORDER = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3, INFO: 4 };
+
+  function scoreColor(score) {
+    if (score >= 90) return 'green';
+    if (score >= 70) return 'yellow';
+    if (score >= 40) return 'orange';
+    return 'red';
+  }
+
+  function scoreMessage(score) {
+    if (score >= 90) return 'Ready to deploy';
+    if (score >= 70) return 'Fix HIGH items before deploying';
+    if (score >= 40) return 'Significant security issues. Do not deploy to production.';
+    return 'Critical vulnerabilities. Stop and fix before shipping.';
+  }
+
+  function downloadJSON() {
+    if (!scanData) return;
+    const blob = new Blob([JSON.stringify(scanData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'shipsafe-report.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  /* ── Render Dashboard ────────────────────────────── */
+  function renderDashboard(data) {
+    document.getElementById('scan-view').style.display = 'none';
+    document.getElementById('dashboard').classList.add('visible');
+
+    const findings = data.findings || [];
+    const score = typeof data.score === 'number' ? data.score
+      : (data.score && typeof data.score.value === 'number') ? data.score.value : 100;
+    const filesScanned = data.files_scanned || 0;
+    const target = data.target || '';
+    const version = data.shipsafe_version || '';
+
+    // Diff data from server (new/resolved tracking)
+    const diffNew = data.diff ? data.diff.new || [] : [];
+    const diffResolved = data.diff ? data.diff.resolved || [] : [];
+    const newFps = new Set(diffNew);
+
+    // Sort: severity (CRITICAL first), then New before existing, then by file
+    findings.sort((a, b) => {
+      const s = (SEV_ORDER[a.severity] || 9) - (SEV_ORDER[b.severity] || 9);
+      if (s !== 0) return s;
+      const aNew = a.fingerprint && newFps.has(a.fingerprint) ? 0 : 1;
+      const bNew = b.fingerprint && newFps.has(b.fingerprint) ? 0 : 1;
+      if (aNew !== bNew) return aNew - bNew;
+      return (a.file_path || '').localeCompare(b.file_path || '');
+    });
+
+    document.getElementById('dash-target').textContent = target;
+
+    // Score chip + metadata (matching HTML report layout)
+    const color = scoreColor(score);
+    const msg = scoreMessage(score);
+
+    document.getElementById('status-row').innerHTML = `
+      <div class="score-chip ${color}">
+        <span class="score-label">Security Score <span class="help-icon" onclick="event.stopPropagation(); this.classList.toggle('active')">?<span class="help-popover" style="width:340px"><strong style="font-size:14px;color:var(--text)">How does the Security Score work?</strong><br><br>Every project starts at <strong>100</strong>. Points are deducted for each finding based on severity:<br><br><table style="width:100%;border-collapse:collapse;font-size:12px;margin:4px 0"><tr><td style="padding:4px 8px 4px 0"><strong>CRITICAL</strong></td><td style="padding:4px 0">&minus;25 per finding</td><td style="padding:4px 0;color:var(--text-2)">cap &minus;75</td></tr><tr><td style="padding:4px 8px 4px 0"><strong>HIGH</strong></td><td style="padding:4px 0">&minus;10 per finding</td><td style="padding:4px 0;color:var(--text-2)">cap &minus;40</td></tr><tr><td style="padding:4px 8px 4px 0"><strong>MEDIUM</strong></td><td style="padding:4px 0">&minus;5 per finding</td><td style="padding:4px 0;color:var(--text-2)">cap &minus;25</td></tr><tr><td style="padding:4px 8px 4px 0"><strong>LOW</strong></td><td style="padding:4px 0">&minus;2 per finding</td><td style="padding:4px 0;color:var(--text-2)">cap &minus;10</td></tr></table><br><span style="font-size:12px;color:var(--text-2)">90&ndash;100 = Ready to deploy &bull; 70&ndash;89 = Fix HIGHs first<br>40&ndash;69 = Do not deploy &bull; 0&ndash;39 = Stop and fix</span><br><br><a href="#" onclick="event.preventDefault(); showRulesView()">View all 77 rules &rarr;</a></span></span></span>
+        <span class="score-value">${score}<small style="font-size:16px;opacity:0.7">/100</small></span>
+        <span class="score-status">${esc(msg)}</span>
+      </div>
+      <div class="status-meta">
+        <span><strong>Files scanned:</strong> ${filesScanned}</span>
+        <span><strong>Findings:</strong> ${findings.length}</span>
+        ${version ? `<span><strong>ShipSafe:</strong> v${esc(version)}</span>` : ''}
+        <div class="diff-badges">
+          ${diffNew.length ? `<span class="badge badge-new">${diffNew.length} New</span>` : ''}
+          ${diffResolved.length ? `<span class="badge badge-resolved">${diffResolved.length} Resolved</span>` : ''}
+        </div>
+      </div>
+    `;
+
+    // Summary grid
+    const summary = data.summary || {};
+    const sevNames = ['critical', 'high', 'medium', 'low', 'info'];
+    document.getElementById('summary-grid').innerHTML =
+      `<div class="stat-card">
+        <div class="stat-card-label">Total</div>
+        <div class="stat-card-value">${summary.total || findings.length}</div>
+      </div>` +
+      sevNames.map(s => `
+        <div class="stat-card">
+          <div class="stat-card-label">${s.charAt(0).toUpperCase() + s.slice(1)}</div>
+          <div class="stat-card-value sev-${s}">${summary[s] || 0}</div>
+        </div>
+      `).join('');
+
+    // Findings or empty state
+    if (findings.length === 0) {
+      document.getElementById('findings-container').style.display = 'none';
+      document.getElementById('filter-bar').style.display = 'none';
+      document.getElementById('empty-state').style.display = '';
+      document.getElementById('empty-state-text').innerHTML =
+        `${filesScanned} files scanned. Zero security issues detected.<br><br>Looks clean. Ship with caution.<br><span style="color:var(--text-3);font-size:12px">ShipSafe was built with AI assistance and curated by a human.</span>`;
+    } else {
+      document.getElementById('findings-container').style.display = '';
+      document.getElementById('filter-bar').style.display = '';
+      document.getElementById('empty-state').style.display = 'none';
+      _allFindings = findings;
+      _newFps = newFps;
+      renderFindings();
+    }
+
+    // Footer
+    document.getElementById('footer').innerHTML =
+      `ShipSafe${version ? ' v' + esc(version) : ''} &middot; Deterministic regex scan. Your code never left this machine.<div class="footer-line2">Detects known vulnerability patterns only. Does not detect runtime-only issues, business logic flaws, or semantic vulnerabilities.</div>`;
+  }
+
+  /* ── Findings Rendering ──────────────────────────── */
+  let _allFindings = [];
+  let _renderedFindings = [];
+  let _newFps = new Set();
+
+  function renderRow(f, i) {
+    const sev = f.severity.toLowerCase();
+    const confCls = 'confidence-' + (f.confidence || 'medium');
+    const isNew = f.fingerprint && _newFps.has(f.fingerprint);
+    const rowCls = isNew ? 'new-finding' : '';
+    const statusBadge = isNew ? '<span class="badge badge-new">New</span>' : '';
+    return `<tr class="${rowCls}" data-idx="${i}" data-sev="${f.severity}" data-conf="${f.confidence || ''}" onclick="toggleDetail(this)">
+      <td><span class="sev-dot ${sev}"></span>${f.severity}</td>
+      <td class="file-ref">${esc(f.file_path)}:${f.line_number || ''}</td>
+      <td>${esc(f.rule_id)}</td>
+      <td><span class="confidence-badge ${confCls}">${f.confidence || ''}</span></td>
+      <td>${statusBadge}</td>
+    </tr>
+    <tr class="detail-row" id="detail-${i}">
+      <td colspan="5" class="detail-cell">
+        <div class="detail-meta">
+          <dl><dt>Rule</dt><dd>${esc(f.rule_id)} - ${esc(f.rule_name)}</dd></dl>
+          ${f.cwe_id ? `<dl><dt>CWE</dt><dd><a href="https://cwe.mitre.org/data/definitions/${esc(f.cwe_id).replace('CWE-','')}.html" target="_blank" rel="noopener">${esc(f.cwe_id)}</a></dd></dl>` : ''}
+          ${f.owasp_id ? `<dl><dt>OWASP</dt><dd>${f.owasp_url ? `<a href="${esc(f.owasp_url)}" target="_blank" rel="noopener">${esc(f.owasp_id)}</a>` : esc(f.owasp_id)}</dd></dl>` : ''}
+          ${f.fingerprint ? `<dl><dt>Fingerprint</dt><dd style="font-size:11px">${f.fingerprint}</dd></dl>` : ''}
+        </div>
+        <div class="detail-grid">
+          <div class="detail-section"><h4>Why this matters</h4><p>${esc(f.message)}</p></div>
+          <div class="detail-section"><h4>Fix</h4><p style="white-space:pre-wrap">${esc(f.fix).replace(/\\n/g,'<br>')}</p></div>
+        </div>
+        ${f.snippet ? `<div class="detail-section" style="margin-top:12px"><h4>Code</h4><pre class="detail-code">${esc(f.snippet)}</pre></div>` : ''}
+        <button class="copy-fix-btn" onclick="event.stopPropagation(); copyFixPrompt(this, ${i})" title="Copy a ready-made fix prompt for your AI coding tool">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2"/>
+            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+          </svg>
+          Copy fix prompt
+        </button>
+      </td>
+    </tr>`;
+  }
+
+  function renderFindings() {
+    const sev = document.getElementById('filter-severity').value;
+    const conf = document.getElementById('filter-confidence').value;
+    const search = document.getElementById('filter-search').value.toLowerCase();
+    const filtered = _allFindings.filter(f => {
+      if (sev && f.severity !== sev) return false;
+      if (conf && f.confidence !== conf) return false;
+      if (search) {
+        const hay = (f.rule_id + f.rule_name + f.file_path + f.message + (f.snippet || '')).toLowerCase();
+        if (!hay.includes(search)) return false;
+      }
+      return true;
+    });
+    _renderedFindings = filtered;
+    document.getElementById('findings-body').innerHTML = filtered.map((f, i) => renderRow(f, i)).join('');
+  }
+
+  function toggleDetail(tr) {
+    const idx = tr.dataset.idx;
+    if (idx === undefined) return;
+    const detail = document.getElementById('detail-' + idx);
+    if (detail) {
+      detail.classList.toggle('visible');
+      tr.classList.toggle('expanded');
+    }
+  }
+
+  document.getElementById('filter-severity').addEventListener('change', renderFindings);
+  document.getElementById('filter-confidence').addEventListener('change', renderFindings);
+  document.getElementById('filter-search').addEventListener('input', renderFindings);
+
+  // Column sorting
+  let sortCol = 'severity', sortAsc = true;
+  document.querySelectorAll('#findings-table th[data-sort]').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.sort;
+      if (sortCol === col) sortAsc = !sortAsc; else { sortCol = col; sortAsc = true; }
+      _allFindings.sort((a, b) => {
+        let va = a[col] || '', vb = b[col] || '';
+        if (col === 'severity') { va = SEV_ORDER[a.severity] || 9; vb = SEV_ORDER[b.severity] || 9; }
+        if (va < vb) return sortAsc ? -1 : 1;
+        if (va > vb) return sortAsc ? 1 : -1;
+        return 0;
+      });
+      renderFindings();
+    });
+  });
+
+  /* ── Browse Folder ──────────────────────────────── */
+  async function browseFolder() {
+    try {
+      const res = await fetch(API_BASE + '/api/browse');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.path) {
+          document.getElementById('scan-path').value = data.path;
+        }
+      }
+    } catch (e) {
+      // Server not running or endpoint unavailable
+    }
+  }
+
+  /* ── Popover dismiss on outside click ─────────── */
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.help-icon')) {
+      document.querySelectorAll('.help-icon.active').forEach(el => el.classList.remove('active'));
+    }
+  });
+
+  function copyFixPrompt(btn, i) {
+    const f = _renderedFindings[i];
+    if (!f) return;
+    const prompt = `Fix this security vulnerability in my code:
+
+Issue: ${f.rule_name || f.rule_id}
+File: ${f.file_path}
+Line: ${f.line_number}
+Severity: ${f.severity}
+
+${f.fix || f.message}
+
+Please fix this specific issue without changing unrelated code.`;
+
+    navigator.clipboard.writeText(prompt).then(() => {
+      btn.classList.add('copied');
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Copied!`;
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy fix prompt`;
+      }, 2000);
+    });
+  }
+
+  /* ── Rules Reference ──────────────────────────── */
+  let _rulesData = null;
+  let _previousView = null;
+
+  function showRulesView() {
+    // Close any open popovers
+    document.querySelectorAll('.help-icon.active').forEach(el => el.classList.remove('active'));
+    // Remember which view was active
+    const scanView = document.getElementById('scan-view');
+    const dashboard = document.getElementById('dashboard');
+    _previousView = dashboard.classList.contains('visible') ? 'dashboard' : 'scan';
+    scanView.style.display = 'none';
+    dashboard.classList.remove('visible');
+    document.getElementById('rules-view').classList.add('visible');
+    loadRules();
+  }
+
+  function hideRulesView() {
+    document.getElementById('rules-view').classList.remove('visible');
+    if (_previousView === 'dashboard') {
+      document.getElementById('dashboard').classList.add('visible');
+    } else {
+      document.getElementById('scan-view').style.display = '';
+      document.getElementById('scan-form').style.display = '';
+    }
+  }
+
+  async function loadRules() {
+    if (_rulesData) { renderRules(_rulesData); return; }
+    try {
+      const res = await fetch(API_BASE + '/api/rules');
+      if (res.ok) {
+        _rulesData = await res.json();
+        renderRules(_rulesData);
+      }
+    } catch (e) {
+      document.getElementById('rules-list').innerHTML =
+        '<p style="color:var(--text-2)">Could not load rules. Make sure ShipSafe server is running.</p>';
+    }
+  }
+
+  const CWE_URL = 'https://cwe.mitre.org/data/definitions/';
+  const OWASP_URLS = {
+    // OWASP Top 10:2025 — https://owasp.org/Top10/2025/
+    'A01:2025': 'https://owasp.org/Top10/2025/A01_2025-Broken_Access_Control/',
+    'A02:2025': 'https://owasp.org/Top10/2025/A02_2025-Security_Misconfiguration/',
+    'A03:2025': 'https://owasp.org/Top10/2025/A03_2025-Software_Supply_Chain_Failures/',
+    'A04:2025': 'https://owasp.org/Top10/2025/A04_2025-Cryptographic_Failures/',
+    'A05:2025': 'https://owasp.org/Top10/2025/A05_2025-Injection/',
+    'A06:2025': 'https://owasp.org/Top10/2025/A06_2025-Insecure_Design/',
+    'A07:2025': 'https://owasp.org/Top10/2025/A07_2025-Authentication_Failures/',
+    'A08:2025': 'https://owasp.org/Top10/2025/A08_2025-Software_or_Data_Integrity_Failures/',
+    'A09:2025': 'https://owasp.org/Top10/2025/A09_2025-Security_Logging_and_Alerting_Failures/',
+    'A10:2025': 'https://owasp.org/Top10/2025/A10_2025-Mishandling_of_Exceptional_Conditions/',
+    // Legacy 2021 IDs — mapped to closest 2025 equivalents
+    'A01:2021': 'https://owasp.org/Top10/2025/A01_2025-Broken_Access_Control/',
+    'A02:2021': 'https://owasp.org/Top10/2025/A04_2025-Cryptographic_Failures/',
+    'A03:2021': 'https://owasp.org/Top10/2025/A05_2025-Injection/',
+    'A04:2021': 'https://owasp.org/Top10/2025/A06_2025-Insecure_Design/',
+    'A05:2021': 'https://owasp.org/Top10/2025/A02_2025-Security_Misconfiguration/',
+    'A06:2021': 'https://owasp.org/Top10/2025/A03_2025-Software_Supply_Chain_Failures/',
+    'A07:2021': 'https://owasp.org/Top10/2025/A07_2025-Authentication_Failures/',
+    'A08:2021': 'https://owasp.org/Top10/2025/A08_2025-Software_or_Data_Integrity_Failures/',
+    'A09:2021': 'https://owasp.org/Top10/2025/A09_2025-Security_Logging_and_Alerting_Failures/',
+    'A10:2021': 'https://owasp.org/Top10/2025/',
+  };
+
+  const GROUP_META = {
+    'SEC': 'Secrets & Credentials',
+    'CFG': 'Configuration',
+    'CRY': 'Cryptography',
+    'DAT': 'Data Protection',
+    'GIT': 'Git Security',
+    'AUTH': 'Authentication & Authorization',
+    'INJ': 'Injection',
+    'DEP': 'Dependencies',
+    'AI': 'AI/LLM Safety',
+    'DEP1': 'Supply Chain',
+    'PRI': 'Privacy',
+  };
+  const GROUP_ORDER = ['SEC','CFG','CRY','DAT','GIT','AUTH','INJ','DEP','AI','DEP1','PRI'];
+
+  function ruleGroupKey(id) {
+    const m = id.match(/^([A-Z]+)(\d+)$/);
+    if (!m) return id;
+    const alpha = m[1], num = parseInt(m[2]);
+    if (alpha === 'DEP' && num >= 100) return 'DEP1';
+    return alpha;
+  }
+
+  function renderRuleCard(r) {
+    const sevCls = 'sev-' + r.severity.toLowerCase();
+    const cweLink = r.cwe_id ? `<a href="${CWE_URL}${r.cwe_id.replace('CWE-','')}.html" target="_blank" rel="noopener">${esc(r.cwe_id)}</a>` : 'N/A';
+    const owaspLink = r.owasp_id && OWASP_URLS[r.owasp_id]
+      ? `<a href="${OWASP_URLS[r.owasp_id]}" target="_blank" rel="noopener">${esc(r.owasp_id)}</a>`
+      : (r.owasp_id ? esc(r.owasp_id) : '');
+    const llmLink = r.owasp_llm_id
+      ? `<a href="https://owasp.org/www-project-top-10-for-large-language-model/" target="_blank" rel="noopener">${esc(r.owasp_llm_id)}</a>`
+      : '';
+    return `<div class="rule-card" data-search="${(r.id+' '+r.name+' '+r.description+' '+(r.cwe_id||'')+' '+(r.owasp_id||'')).toLowerCase()}">
+      <div class="rule-card-header" onclick="this.parentElement.classList.toggle('expanded')">
+        <span class="rule-card-id">${esc(r.id)}</span>
+        <h3>${esc(r.name)}</h3>
+        <span class="sev-dot ${r.severity.toLowerCase()}" style="flex-shrink:0"></span>
+        <span class="${sevCls}" style="font-size:12px;font-weight:600;white-space:nowrap">${r.severity}</span>
+      </div>
+      <div class="rule-card-body">
+        <dl>
+          <dt>What it detects</dt>
+          <dd>${esc(r.description)}</dd>
+          <dt>How to fix</dt>
+          <dd style="white-space:pre-wrap">${esc(r.fix).replace(/\\n/g,'<br>')}</dd>
+          <dt>References</dt>
+          <dd>
+            ${r.cwe_id ? 'CWE: ' + cweLink + '<br>' : ''}
+            ${owaspLink ? 'OWASP Top 10: ' + owaspLink + '<br>' : ''}
+            ${llmLink ? 'OWASP LLM Top 10: ' + llmLink + '<br>' : ''}
+          </dd>
+          <dt>Confidence</dt>
+          <dd><span class="confidence-badge confidence-${r.confidence}">${r.confidence}</span></dd>
+          ${r.file_extensions.length ? `<dt>Applies to</dt><dd>${r.file_extensions.map(e => '<code>'+esc(e)+'</code>').join(', ')}</dd>` : ''}
+        </dl>
+      </div>
+    </div>`;
+  }
+
+  function renderRules(rules) {
+    // Group rules by prefix
+    const groups = {};
+    rules.forEach(r => {
+      const key = ruleGroupKey(r.id);
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(r);
+    });
+
+    const list = document.getElementById('rules-list');
+    const folderSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>';
+    const chevron = '<svg class="rule-group-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
+
+    list.innerHTML = GROUP_ORDER.filter(k => groups[k]).map(key => {
+      const groupRules = groups[key];
+      const name = GROUP_META[key] || key;
+      return `<div class="rule-group" data-group="${key}">
+        <div class="rule-group-header" onclick="this.parentElement.classList.toggle('expanded')">
+          ${chevron} ${folderSvg}
+          <span class="rule-group-prefix">${key}</span>
+          <span>${esc(name)}</span>
+          <span class="rule-group-count">${groupRules.length} rules</span>
+        </div>
+        <div class="rule-group-body">
+          ${groupRules.map(r => renderRuleCard(r)).join('')}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('rule-search').addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    if (!q) {
+      // Show all groups and cards, collapse groups
+      document.querySelectorAll('.rule-group').forEach(g => { g.style.display = ''; g.classList.remove('expanded'); });
+      document.querySelectorAll('.rule-card').forEach(c => { c.style.display = ''; });
+      return;
+    }
+    document.querySelectorAll('.rule-group').forEach(group => {
+      const cards = group.querySelectorAll('.rule-card');
+      let anyVisible = false;
+      cards.forEach(card => {
+        const match = card.dataset.search.includes(q);
+        card.style.display = match ? '' : 'none';
+        if (match) anyVisible = true;
+      });
+      group.style.display = anyVisible ? '' : 'none';
+      if (anyVisible) group.classList.add('expanded');
+    });
+  });
+
+  /* -- Cycling word animation -------------------------------- */
+  const CYCLE_WORDS = ['secrets','injection','auth gaps','weak crypto','XSS','API keys',
+    'AI prompt leaks','path traversal','misconfigs','bad deps','PII leaks','JWT secrets'];
+  let cycleIndex = 0;
+  setInterval(() => {
+    const el = document.getElementById('cycle-word');
+    if (!el) return;
+    el.classList.add('fade-out');
+    setTimeout(() => {
+      cycleIndex = (cycleIndex + 1) % CYCLE_WORDS.length;
+      el.textContent = CYCLE_WORDS[cycleIndex];
+      el.classList.remove('fade-out');
+    }, 300);
+  }, 2500);
+  </script>
+</body>
+</html>

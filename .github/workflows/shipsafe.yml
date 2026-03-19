@@ -1,0 +1,29 @@
+name: ShipSafe
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: shipsafe
+        uses: ./
+        with:
+          path: .
+          format: sarif
+          output: shipsafe.sarif
+          fail-on: critical,high
+      - name: Upload SARIF artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shipsafe-sarif
+          path: ${{ steps.shipsafe.outputs.report-path }}

@@ -1,0 +1,14 @@
+{
+    "name": "enterprise",
+    "description": "Enterprise baseline. Full scan with all severities, plus stricter privacy, debug-route, and supply-chain escalation.",
+    "min_severity": "LOW",
+    "severity_overrides": {
+        "DEP002": "CRITICAL",
+        "DEP101": "CRITICAL",
+        "DEP105": "CRITICAL",
+        "PRI001": "CRITICAL",
+        "PRI003": "CRITICAL",
+        "PRI005": "CRITICAL"
+    },
+    "enabled_rule_prefixes": ["SEC", "GIT", "CFG", "CRY", "DAT", "AUTH", "INJ", "DEP", "AI", "PRI"]
+}
