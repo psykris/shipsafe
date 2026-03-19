@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68.0,<80"]
+requires = ["setuptools>=68.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -31,7 +31,7 @@ Issues = "https://github.com/psykris/shipsafe/issues"
 shipsafe = "shipsafe.cli:main"
 
 [project.optional-dependencies]
-test = ["pytest>=7.0,<9", "pytest-cov>=4.0,<6"]
+test = ["pytest>=7.0", "pytest-cov>=4.0"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
