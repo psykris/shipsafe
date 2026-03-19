@@ -4,13 +4,13 @@
 
 **Catch security vulnerabilities in AI-generated code before they catch you.**
 
-ShipSafe is a **deterministic** security scanner. It uses regex pattern matching — no AI, no LLM calls, no cloud services. Your code is analyzed locally and never transmitted anywhere.
+ShipSafe is a **deterministic** security scanner. It uses regex pattern matching - no AI, no LLM calls, no cloud services. Your code is analyzed locally and never transmitted anywhere.
 
 ---
 
 ## Trust Contract
 
-Before you install, here's what ShipSafe guarantees — and how to verify each claim yourself:
+Before you install, here's what ShipSafe guarantees - and how to verify each claim yourself:
 
 | Guarantee | How to verify |
 |-----------|--------------|
@@ -27,9 +27,9 @@ Full verification guide: [TRUST.md](TRUST.md)
 
 ## Who This Is For
 
-- **Vibe coders** — You built something with Cursor, Lovable, Replit, or Claude Code and want to know if it's safe to deploy. ShipSafe gives you a plain-language report with copy-paste fixes.
-- **Developers** — You want CI/CD-integrated security scanning that runs on every push, produces SARIF output, and costs nothing. ShipSafe is a single install with zero dependencies.
-- **Security officers** — You need OWASP-mapped findings, severity scores, and compliance-ready reports. ShipSafe produces scored HTML and JSON reports with transparent methodology.
+- **Vibe coders** - You built something with Cursor, Lovable, Replit, or Claude Code and want to know if it's safe to deploy. ShipSafe gives you a plain-language report with copy-paste fixes.
+- **Developers** - You want CI/CD-integrated security scanning that runs on every push, produces SARIF output, and costs nothing. ShipSafe is a single install with zero dependencies.
+- **Security officers** - You need OWASP-mapped findings, severity scores, and compliance-ready reports. ShipSafe produces scored HTML and JSON reports with transparent methodology.
 
 ---
 
@@ -37,16 +37,16 @@ Full verification guide: [TRUST.md](TRUST.md)
 
 ### Installation
 
-ShipSafe has **zero runtime dependencies** — it only uses the Python standard library. Pick whichever install method you prefer:
+ShipSafe has **zero runtime dependencies** - it only uses the Python standard library. Pick whichever install method you prefer:
 
 ```bash
 # Option 1: pip (simple, works everywhere)
 pip install shipsafe
 
-# Option 2: pipx (recommended — auto-isolates CLI tools in their own venv)
+# Option 2: pipx (recommended - auto-isolates CLI tools in their own venv)
 pipx install shipsafe
 
-# Option 3: uv (fastest — modern Python package manager)
+# Option 3: uv (fastest - modern Python package manager)
 uv tool install shipsafe
 ```
 
@@ -55,7 +55,7 @@ uv tool install shipsafe
 > - **pipx** is the safest default for CLI tools. It installs ShipSafe into its own isolated environment so it never conflicts with your project's dependencies. Requires a one-time `pip install pipx`.
 > - **uv** is the fastest option and handles isolation automatically, like pipx. If you already use `uv` for your Python workflow, this is the cleanest choice.
 >
-> Because ShipSafe has zero dependencies, `pip install` carries no real conflict risk — but isolation is still good hygiene.
+> Because ShipSafe has zero dependencies, `pip install` carries no real conflict risk - but isolation is still good hygiene.
 
 ### Scan
 
@@ -78,7 +78,7 @@ That's it. No API keys. No cloud account. No configuration files.
 shipsafe ui
 ```
 
-Drop a folder path into the dashboard, hit Scan, and get a fully scored report — CRITICAL findings first, copy-paste fixes included. This is the recommended starting point for vibe coders.
+Drop a folder path into the dashboard, hit Scan, and get a fully scored report - CRITICAL findings first, copy-paste fixes included. This is the recommended starting point for vibe coders.
 
 ---
 
@@ -164,7 +164,7 @@ Score: 65/100  [Fix HIGH items before deploying]
 | 40–69 | Significant security issues. Do not deploy to production. |
 | 0–39 | Critical vulnerabilities. Stop and fix before shipping. |
 
-The scoring algorithm is fully transparent — see [scoring.py](src/shipsafe/scoring.py).
+The scoring algorithm is fully transparent - see [scoring.py](src/shipsafe/scoring.py).
 
 ---
 
@@ -202,23 +202,23 @@ ShipSafe is not a replacement for AI-powered code review tools (like Claude Code
 | Determinism | Different result each time | Same input = identical output |
 | CI/CD | Impractical | Native (GitHub Action, pre-commit, SARIF) |
 
-Use ShipSafe in your CI pipeline to catch known patterns on every push. Use AI review tools for nuanced, context-dependent analysis. ShipSafe catches the 80% of vulnerabilities that follow known patterns — the hardcoded keys, the missing `.gitignore`, the `verify=False` — before they ever reach a reviewer.
+Use ShipSafe in your CI pipeline to catch known patterns on every push. Use AI review tools for nuanced, context-dependent analysis. ShipSafe catches the 80% of vulnerabilities that follow known patterns - the hardcoded keys, the missing `.gitignore`, the `verify=False` - before they ever reach a reviewer.
 
 ---
 
 ## Guides
 
-- [Before You Deploy](guides/00-before-you-deploy.md) — 5-minute pre-deployment checklist
-- [Secrets Management](guides/01-secrets-management.md) — Environment variables, rotation, what to do after exposure
-- [Authentication](guides/02-authentication.md) — Password handling, JWT, session security
-- [Authorization](guides/03-authorization.md) — BOLA, RBAC, row-level security
-- [Input Validation](guides/04-input-validation.md) — SQL injection, XSS, command injection prevention
-- [API Security](guides/05-api-security.md) — Rate limiting, CORS, header hardening
-- [Deployment Hardening](guides/06-deployment-hardening.md) — Dockerfiles, debug routes, binding
-- [Dependency Safety](guides/07-dependency-safety.md) — Supply chain, pinning, typosquatting
-- [Git Hygiene](guides/08-git-hygiene.md) — `.gitignore`, cleaning git history, secret rotation
-- [AI Security](guides/09-ai-security.md) — Prompt injection, model output sanitization
-- [Privacy](guides/10-privacy.md) — PII handling, logging, encryption
+- [Before You Deploy](guides/00-before-you-deploy.md) - 5-minute pre-deployment checklist
+- [Secrets Management](guides/01-secrets-management.md) - Environment variables, rotation, what to do after exposure
+- [Authentication](guides/02-authentication.md) - Password handling, JWT, session security
+- [Authorization](guides/03-authorization.md) - BOLA, RBAC, row-level security
+- [Input Validation](guides/04-input-validation.md) - SQL injection, XSS, command injection prevention
+- [API Security](guides/05-api-security.md) - Rate limiting, CORS, header hardening
+- [Deployment Hardening](guides/06-deployment-hardening.md) - Dockerfiles, debug routes, binding
+- [Dependency Safety](guides/07-dependency-safety.md) - Supply chain, pinning, typosquatting
+- [Git Hygiene](guides/08-git-hygiene.md) - `.gitignore`, cleaning git history, secret rotation
+- [AI Security](guides/09-ai-security.md) - Prompt injection, model output sanitization
+- [Privacy](guides/10-privacy.md) - PII handling, logging, encryption
 
 ---
 
@@ -237,7 +237,7 @@ ShipSafe scans source files regardless of framework. Detection rules cover Pytho
 ShipSafe is designed for people who have never used a security scanner before. It requires no configuration, produces plain-language output with copy-paste fixes, and runs with zero dependencies. It is also fully offline and free.
 
 **This was written with AI. Why should I trust it?**
-Because the detection engine is deterministic regex patterns — not AI. Every rule is readable, testable, and auditable. The tool passes its own scan. See [TRANSPARENCY.md](TRANSPARENCY.md) for the full story.
+Because the detection engine is deterministic regex patterns - not AI. Every rule is readable, testable, and auditable. The tool passes its own scan. See [TRANSPARENCY.md](TRANSPARENCY.md) for the full story.
 
 ---
 
